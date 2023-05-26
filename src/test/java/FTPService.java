@@ -1,59 +1,72 @@
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPFileFilter;
+import org.apache.commons.net.ftp.FTPSClient;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.util.List;
 
 public class FTPService {
+    private FTPSClient client;
 
-    public FTPClient loginFtp(String host, int port, String username, String password) throws Exception {
-        FTPClient ftpClient = new FTPClient();
-        ftpClient.connect(host, port);
-        ftpClient.login(username, password);
-        return ftpClient;
+
+    public FTPService(FTPSClient client) {
+        this.client = client;
     }
 
-    public void createDirectory(String path, FTPClient ftpClient) throws Exception {
+
+    public void createDirectory(String path) throws Exception {
         System.out.println();
-        System.out.printf("[createDirectory][%d] Is success to create directory : %s -> %b",
-                System.currentTimeMillis(), path, ftpClient.makeDirectory(path));
+        System.out.printf("[createDirectory][%d] Successfully created directory : %s -> %b",
+                System.currentTimeMillis(), path, client.makeDirectory(path));
         System.out.println();
     }
 
-    public void uploadFile(String localPath, String remotePath, FTPClient ftpClient) throws Exception {
+    public void uploadFile(String localPath, String remotePath) throws Exception {
         FileInputStream fileInputStream = new FileInputStream(localPath);
         System.out.println();
-        System.out.printf("[uploadFile][%d] Is success to upload file : %s -> %b",
-                System.currentTimeMillis(), remotePath, ftpClient.storeFile(remotePath, fileInputStream));
+        System.out.printf("[uploadFile][%d] Successfully uploaded file : %s -> %b",
+                System.currentTimeMillis(), remotePath, client.storeFile(remotePath, fileInputStream));
         System.out.println();
     }
 
-    public void renameFile(String oldPath, String newPath, FTPClient ftpClient) throws Exception {
+    public void renameFile(String oldPath, String newPath) throws Exception {
         System.out.println();
-        System.out.printf("[renameFile][%d] Is success to rename file : from %s to %s -> %b",
-                System.currentTimeMillis(), oldPath, newPath, ftpClient.rename(oldPath, newPath));
+        System.out.printf("[renameFile][%d] Successfully to renamed file : from %s to %s -> %b",
+                System.currentTimeMillis(), oldPath, newPath, client.rename(oldPath, newPath));
         System.out.println();
     }
 
-    public byte[] downloadFile(String path, FTPClient ftpClient) throws Exception {
+    public byte[] downloadFile(String path) throws Exception {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         System.out.println();
-        System.out.printf("[downloadFile][%d] Is success to download file : %s -> %b",
-                System.currentTimeMillis(), path, ftpClient.retrieveFile(path, byteArrayOutputStream));
+        System.out.printf("[downloadFile][%d] Successfully downloaded file : %s -> %b",
+                System.currentTimeMillis(), path, client.retrieveFile(path, byteArrayOutputStream));
         System.out.println();
         return byteArrayOutputStream.toByteArray();
     }
 
-    public void deleteFile(String path, FTPClient ftpClient) throws Exception {
+    public void deleteFile(String path) throws Exception {
         System.out.println();
-        System.out.printf("[deleteFile][%d] Is success to delete file : %s -> %b",
-                System.currentTimeMillis(), path, ftpClient.deleteFile(path));
+        System.out.printf("[deleteFile][%d] Successfully deleted file : %s -> %b",
+                System.currentTimeMillis(), path, client.deleteFile(path));
         System.out.println();
     }
 
-    public void deleteDirectory(String path, FTPClient ftpClient) throws Exception {
+    public void deleteDirectory(String path) throws Exception {
         System.out.println();
-        System.out.printf("[deleteDirectory][%d] Is success to delete directory : %s -> %b",
-                System.currentTimeMillis(), path, ftpClient.removeDirectory(path));
+        System.out.printf("[deleteDirectory][%d] Successfully deleted directory : %s -> %b",
+                System.currentTimeMillis(), path, client.removeDirectory(path));
         System.out.println();
+    }
+
+    public List<FTPFile> listDirectories(String path) throws Exception {
+        System.out.println(client.listFiles(path, FTPFile::isDirectory).length);
+        List<FTPFile> files = List.of(client.listDirectories());
+        System.out.printf("[deleteDirectory][%d] Successfully listing directory : %s",
+                System.currentTimeMillis(), files.size());
+        return files;
     }
 }

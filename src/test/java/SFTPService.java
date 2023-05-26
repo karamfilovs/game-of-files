@@ -1,53 +1,52 @@
-import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.sftp.SFTPClient;
-import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 
 public class SFTPService {
 
-    public SSHClient loginSftp(String host, int port, String username, String password)
-            throws Exception {
-        SSHClient client = new SSHClient();
-        client.addHostKeyVerifier(new PromiscuousVerifier());
-        client.connect(host, port);
-        client.authPassword(username, password);
-        return client;
+    private SFTPClient client;
+
+
+    public SFTPService(SFTPClient client) {
+        this.client = client;
+
     }
 
-    public void createDirectory(String path, SFTPClient sftpClient) throws Exception {
+
+
+    public void createDirectory(String path) throws Exception {
         System.out.println();
-        sftpClient.mkdirs(path);
-        System.out.printf("[createDirectory][%d] Is success to create directory : %s",
+        client.mkdirs(path);
+        System.out.printf("[createDirectory][%d] Successfully created directory : %s",
                 System.currentTimeMillis(), path);
         System.out.println();
     }
 
-    public void uploadFile(String localPath, String remotePath, SFTPClient sftpClient) throws Exception {
+    public void uploadFile(String localPath, String remotePath) throws Exception {
         System.out.println();
-        sftpClient.put(localPath, remotePath);
-        System.out.printf("[uploadFile][%d] Is success to upload file : %s",
+        client.put(localPath, remotePath);
+        System.out.printf("[uploadFile][%d] Successfully uploaded file : %s",
                 System.currentTimeMillis(), remotePath);
         System.out.println();
     }
 
-    public void renameFile(String oldPath, String newPath, SFTPClient sftpClient) throws Exception {
+    public void renameFile(String oldPath, String newPath) throws Exception {
         System.out.println();
-        sftpClient.rename(oldPath, newPath);
-        System.out.printf("[renameFile][%d] Is success to rename file : from %s to %s",
+        client.rename(oldPath, newPath);
+        System.out.printf("[renameFile][%d] Successfully renamed file : from %s to %s",
                 System.currentTimeMillis(), oldPath, newPath);
         System.out.println();
     }
-    public void deleteFile(String path, SFTPClient sftpClient) throws Exception {
+    public void deleteFile(String path) throws Exception {
         System.out.println();
-        sftpClient.rm(path);
-        System.out.printf("[deleteFile][%d] Is success to delete file : %s",
+        client.rm(path);
+        System.out.printf("[deleteFile][%d] Successfully deleted file : %s",
                 System.currentTimeMillis(), path);
         System.out.println();
     }
 
-    public void deleteDirectory(String path, SFTPClient sftpClient) throws Exception {
+    public void deleteDirectory(String path) throws Exception {
         System.out.println();
-        sftpClient.rmdir(path);
-        System.out.printf("[deleteDirectory][%d] Is success to delete directory : %s",
+        client.rmdir(path);
+        System.out.printf("[deleteDirectory][%d] Successfully deleted directory : %s",
                 System.currentTimeMillis(), path);
         System.out.println();
     }
